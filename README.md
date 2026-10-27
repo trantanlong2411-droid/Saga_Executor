@@ -25,7 +25,7 @@ The included Solidity sandbox creates two worthless test ERC-20 assets. The "swa
 3. Click **Deploy sandbox contract**. This requires wallet approval and testnet gas, and mints 10,000 worthless test asset A to the deploying wallet while holding worthless test asset B as a reserve.
 4. Leave the resulting contract address populated; set the amount to 1. Click **Run success saga**. Approve each of the three wallet transactions. Confirm on-screen 3 receipts and success plus vault shares.
 5. Click **Run forced-failure + recovery**. Approve step 1 and 2, sign the deliberately reverting deposit (which spends gas), then approve refund and allowance revoke compensating transactions. Observe receipt status 0, COMPENSATED, and pending balance 0.
-6. Export both JSON traces; click hashes to open Atlantic Explorer receipts. For submission, provide this public demo link, the repo, and transaction hashes / JSON evidence. If you cannot run real transactions, explicitly say so — unit tests alone are not complete challenge evidence.
+6. If the wallet refuses to broadcast the intentionally reverting deposit, click **Recover pending / revoke approval**, then confirm the compensating transactions. This is a safe alternative recovery demo, but without a reverted on-chain receipt it does not prove the strongest forced-failure criterion. Export both JSON traces; click hashes to open Atlantic Explorer receipts. For submission, provide this public demo link, the repo, and transaction hashes / JSON evidence. If you cannot run real transactions, explicitly say so — unit tests alone are not complete challenge evidence.
 
 Note that browsers and wallets sometimes reject a knowingly reverting transaction *before broadcast*. In that case the UI does not invent a status-0 receipt; it records the failure and stops. Perform a real on-chain forced-revert to meet the strongest form of proof.
 
@@ -52,7 +52,7 @@ npx wrangler deploy
 
 A Git-linked Cloudflare Worker should use branch `main` and a Worker name matching `wrangler.jsonc`: `saga-executor`. Cloudflare Workers Builds deploys automatically from GitHub pushes; no local Git or Windows script is required after initial setup.
 
-## Security and state caveats
+## Manual recovery\n\nThe UI includes **Recover pending / revoke approval**. It queries your real pending test credit and allowance, sends compensation transactions only when there is something to undo, and verifies each receipt. It refuses to compensate while a previously submitted transaction has an unknown receipt; first reconcile that hash. Successful prior vault deposits are not silently reversed.\n\n## Security and state caveats
 
 - No custody, wallet keys, seed phrases, token approvals on mainnet, or mainnet deployment.
 - Real-money swaps are not available. The demo issues test assets from its own sandbox contract.

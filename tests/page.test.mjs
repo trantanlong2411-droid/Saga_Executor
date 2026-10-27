@@ -4,7 +4,7 @@ import {Script} from 'node:vm';
 import {HTML} from '../src/page.mjs';
 import artifact from '../public/contract.json' with {type:'json'};
 test('Browser UI contains both saga branches and export evidence controls',()=>{
- for(const id of ['runhappy','runfail','export','deploy','connect','reconcile'])
+ for(const id of ['runhappy','runfail','recover','export','deploy','connect','reconcile'])
    assert.match(HTML,new RegExp('id="'+id+'"'));
  assert.match(HTML,/COMPENSATION_CONFIRMED/);
  assert.match(HTML,/STEP_CONFIRMED/);
