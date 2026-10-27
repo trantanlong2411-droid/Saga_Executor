@@ -14,7 +14,9 @@
   },
   "devDependencies": {
     "solc": "0.8.30",
-    "wrangler": "^4.0.0",
+    "wrangler": "^4.0.0"
+  },
+  "dependencies": {
     "ethers": "^6.15.0"
   }
 }

@@ -52,6 +52,16 @@ npx wrangler deploy
 
 A Git-linked Cloudflare Worker should use branch `main` and a Worker name matching `wrangler.jsonc`: `saga-executor`. Cloudflare Workers Builds deploys automatically from GitHub pushes; no local Git or Windows script is required after initial setup.
 
+## Recover a real confirmed swap from a lagging RPC state
+
+A real October 27, 2026 testnet SWAP transaction `0x530b552a9e146bd515c7757017d861d1b338bc06dd9d24c2769f586079828722` had `receipt.status=1`, `Swapped` event, and real `pending=1000000000000000000` wei at its receipt block `0x1e79ab4` AND at latest. The browser's immediate provider state read gave a stale result and misclassified the step as failed.
+
+The Worker now provides `GET /api/state?contract=...&wallet=...&block=0x...` with read-only Atlantic RPC calls for allowance/pending/deposited and chain-ID verification. After each successful receipt, the app checks state at the exact receipt block and again at latest, with bounded retries. If verification lags, it sets `NEEDS_RECONCILIATION`, preserves the transaction hash, and never blindly rebroadcasts.
+
+For historical audit traces where SWAP is `SUBMITTED` with status `1` but `state: FAILED`, use **Reconcile last tx** in the same browser. The handler verifies chain, wallet, contract, receipt hash/sender/destination and on-chain state, changes SWAP to `CONFIRMED`, then enables **Resume interrupted saga** to proceed to DEPOSIT without a duplicate SWAP.
+
+See [read-only CI on-chain diagnostics](https://github.com/trantanlong2411-droid/Saga_Executor/actions/runs/40562887657).
+
 ## Continue after a rejected wallet signature
 
 If the wallet rejects the SWAP signature (ethers `ACTION_REJECTED` or EIP-1193 error 4001) after APPROVE succeeds, this is not a reverted blockchain transaction. The approval receipt remains valid and any allowance may remain set. The site now stores a `PAUSED_USER` audit state and enables **Resume interrupted saga**. It re-checks Pharos Atlantic chain 688689, connected wallet, deployed sandbox contract, amount, prior APPROVE/SWAP receipts, and current token allowance or pending on-chain credit before signing the next step. No automatic broadcast or duplicate swap occurs while a receipt is unknown.

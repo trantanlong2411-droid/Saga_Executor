@@ -37,5 +37,14 @@ async function main(){
  assert.equal(receipt.chainId,688689);
  assert.equal(receipt.receipt,null);
  console.log('ATLANTIC RPC READ SUCCESS: chain 688689, no fabricated receipt for null hash');
+ const wallet='0x74B2c2E4E4B771F0C75dcE44f40787468E323f79';
+ const contract='0x934403227468426b33c26536dABC33b066B73f73';
+ const qs=new URLSearchParams({wallet,contract,block:'0x1e79ab4'});
+ const state=JSON.parse((await grab('/api/state?'+qs)).body);
+ assert.equal(state.ok,true);assert.equal(state.chainId,688689);
+ assert.equal(state.pendingWei,'1000000000000000000');
+ console.log('PINNED PHAROS SWAP STATE SUCCESS',JSON.stringify({
+  contract,wallet,at:state.block,pendingWei:state.pendingWei
+ }));
 }
 main().catch(err=>{console.error('SMOKE FAILED',err.message);process.exitCode=1;});

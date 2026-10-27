@@ -30,3 +30,12 @@ test('Resume guard revalidates receipts and actual allowances',()=>{
   assert.match(HTML,/a\.allowance\(wallet,address\(\)\)/);
   assert.match(HTML,/WALLET_SIGNATURE_REJECTED/);
 });
+
+test('Receipt state is checked at pinned block and latest and failures halt without resubmitting',()=>{
+ assert.match(HTML,/await chainState\(rc.blockNumber\)/);
+ assert.match(HTML,/await chainState\('latest'\)/);
+ assert.match(HTML,/AWAITING_ONCHAIN_STATE/);
+ assert.match(HTML,/STEP_RECONCILED/);
+ assert.match(HTML,/rc.from\?\.toLowerCase/);
+ assert.match(HTML,/rc.to\?\.toLowerCase/);
+});
