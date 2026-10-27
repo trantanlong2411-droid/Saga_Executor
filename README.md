@@ -56,7 +56,7 @@ A Git-linked Cloudflare Worker should use branch `main` and a Worker name matchi
 
 A real October 27, 2026 testnet SWAP transaction `0x530b552a9e146bd515c7757017d861d1b338bc06dd9d24c2769f586079828722` had `receipt.status=1`, `Swapped` event, and real `pending=1000000000000000000` wei at its receipt block `0x1e79ab4` AND at latest. The browser's immediate provider state read gave a stale result and misclassified the step as failed.
 
-The Worker now provides `GET /api/state?contract=...&wallet=...&block=0x...` with read-only Atlantic RPC calls for allowance/pending/deposited and chain-ID verification. After each successful receipt, the app checks state at the exact receipt block and again at latest, with bounded retries. If verification lags, it sets `NEEDS_RECONCILIATION`, preserves the transaction hash, and never blindly rebroadcasts.
+Receipt-gated compensation also verifies a refunded pending balance or revoked allowance at both receipt block and latest, with bounded retries. The Worker now provides `GET /api/state?contract=...&wallet=...&block=0x...` with read-only Atlantic RPC calls for allowance/pending/deposited and chain-ID verification. After each successful receipt, the app checks state at the exact receipt block and again at latest, with bounded retries. If verification lags, it sets `NEEDS_RECONCILIATION`, preserves the transaction hash, and never blindly rebroadcasts.
 
 For historical audit traces where SWAP is `SUBMITTED` with status `1` but `state: FAILED`, use **Reconcile last tx** in the same browser. The handler verifies chain, wallet, contract, receipt hash/sender/destination and on-chain state, changes SWAP to `CONFIRMED`, then enables **Resume interrupted saga** to proceed to DEPOSIT without a duplicate SWAP.
 

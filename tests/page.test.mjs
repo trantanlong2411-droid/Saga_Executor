@@ -39,3 +39,10 @@ test('Receipt state is checked at pinned block and latest and failures halt with
  assert.match(HTML,/rc.from\?\.toLowerCase/);
  assert.match(HTML,/rc.to\?\.toLowerCase/);
 });
+
+test('Compensation must verify state at receipt block and latest before completing',()=>{
+ assert.match(HTML,/verifyCompensationState/);
+ assert.match(HTML,/COMPENSATION_STATE_CONFIRMED/);
+ assert.match(HTML,/BigInt\(s.pendingWei\)===0n/);
+ assert.match(HTML,/BigInt\(s.allowanceWei\)===0n/);
+});
