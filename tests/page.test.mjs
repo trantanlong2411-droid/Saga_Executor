@@ -4,7 +4,7 @@ import {Script} from 'node:vm';
 import {HTML} from '../src/page.mjs';
 import artifact from '../public/contract.json' with {type:'json'};
 test('Browser UI contains both saga branches and export evidence controls',()=>{
- for(const id of ['runhappy','runfail','recover','export','deploy','connect','reconcile'])
+ for(const id of ['runhappy','runfail','resume','recover','export','deploy','connect','reconcile'])
    assert.match(HTML,new RegExp('id="'+id+'"'));
  assert.match(HTML,/COMPENSATION_CONFIRMED/);
  assert.match(HTML,/STEP_CONFIRMED/);
@@ -21,4 +21,12 @@ test('Committed contract is compiled, testnet-bound and provides all saga functi
  const token=artifact.tokenAbi.filter(x=>x.type==='function').map(x=>x.name);
  for(const f of ['tokenA','tokenB','swap','deposit','compensateSwap','undoDeposit','pending','deposited'])assert.ok(saga.includes(f),f);
  for(const f of ['approve','allowance','balanceOf','transferFrom'])assert.ok(token.includes(f),f);
+});
+
+test('Resume guard revalidates receipts and actual allowances',()=>{
+  assert.match(HTML,/SAGA_RESUMED/);
+  assert.match(HTML,/approveRc=await waitReceipt/);
+  assert.match(HTML,/swapRc=await waitReceipt/);
+  assert.match(HTML,/a\.allowance\(wallet,address\(\)\)/);
+  assert.match(HTML,/WALLET_SIGNATURE_REJECTED/);
 });

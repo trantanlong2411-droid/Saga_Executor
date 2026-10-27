@@ -52,6 +52,14 @@ npx wrangler deploy
 
 A Git-linked Cloudflare Worker should use branch `main` and a Worker name matching `wrangler.jsonc`: `saga-executor`. Cloudflare Workers Builds deploys automatically from GitHub pushes; no local Git or Windows script is required after initial setup.
 
+## Continue after a rejected wallet signature
+
+If the wallet rejects the SWAP signature (ethers `ACTION_REJECTED` or EIP-1193 error 4001) after APPROVE succeeds, this is not a reverted blockchain transaction. The approval receipt remains valid and any allowance may remain set. The site now stores a `PAUSED_USER` audit state and enables **Resume interrupted saga**. It re-checks Pharos Atlantic chain 688689, connected wallet, deployed sandbox contract, amount, prior APPROVE/SWAP receipts, and current token allowance or pending on-chain credit before signing the next step. No automatic broadcast or duplicate swap occurs while a receipt is unknown.
+
+For an old version audit with `state: FAILED`, successful APPROVE, pending SWAP and pending DEPOSIT, the resume button also works as long as browser localStorage has that original trace. Do not clear your browser data. If you do not want to continue, use **Recover pending / revoke approval** to clear any existing allowance or refundable test credit.
+
+A wallet rejection before SWAP produces no second tx hash and is **not** a forced-failure/rollback proof. To satisfy the 200-point requirement, run a real success saga and a separately confirmed forced-revert + on-chain compensation.
+
 ## Manual recovery\n\nThe UI includes **Recover pending / revoke approval**. It queries your real pending test credit and allowance, sends compensation transactions only when there is something to undo, and verifies each receipt. It refuses to compensate while a previously submitted transaction has an unknown receipt; first reconcile that hash. Successful prior vault deposits are not silently reversed.\n\n## Security and state caveats
 
 - No custody, wallet keys, seed phrases, token approvals on mainnet, or mainnet deployment.
