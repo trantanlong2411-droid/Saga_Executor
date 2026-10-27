@@ -1,0 +1,32 @@
+name: Saga Executor - compile and receipt/state tests
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test-and-compile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+      - name: Test dependency/receipt/recovery rules
+        run: npm test
+      - name: Compile testnet sandbox on GitHub runner
+        run: npm run compile
+      - name: Bundle Cloudflare Worker
+        run: npm run build-check
+      - uses: actions/upload-artifact@v4
+        with:
+          name: saga-playground-compiled-abi-and-bytecode
+          path: public/contract.json
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: node --check src/worker.mjs && node --check src/saga-core.mjs
