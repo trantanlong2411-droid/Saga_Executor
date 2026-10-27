@@ -49,10 +49,11 @@ export default {
         rpc('eth_getBalance',[wallet,'latest'])
       ]);
       const gas=BigInt(gasHex);
+      const fractional=gas%1000000000n;
+      const gwei=(gas/1000000000n).toString()+
+        (fractional===0n?'':'.'+fractional.toString().padStart(9,'0').replace(/0+$/,''));
       return json({ok:true,chainId:CHAIN_ID,
-        gasPriceWei:gas.toString(),gasPriceGwei:gas.toString().length>9?
-          (gas/1000000000n).toString()+'.'+(gas%1000000000n).toString().padStart(9,'0').replace(/0+$/,''):
-          '0.'+gas.toString().padStart(9,'0').replace(/0+$/,''),
+        gasPriceWei:gas.toString(),gasPriceGwei:gwei,
         confirmedNonce:Number(BigInt(latestHex)),pendingNonce:Number(BigInt(pendingHex)),
         balanceWei:BigInt(balanceHex).toString(),note:'RPC fee quote only. Wallet controls final gas display, nonce and signing.'});
     }catch(e){return json({ok:false,error:e.message},502)}
