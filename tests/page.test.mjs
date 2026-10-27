@@ -60,3 +60,10 @@ test('Paused real swap receipt can be recovered without duplicate approve or swa
  assert.match(HTML,/SAFE_RECOVERY_SELECTED/);
  assert.match(HTML,/run.mode==='forced-failure'/);
 });
+
+test('Page has read-only network fee and nonce diagnostic, but does not try to override wallet',()=>{
+ assert.match(HTML,/id="gasstatus"/);
+ assert.match(HTML,/id="gasrefresh"/);
+ assert.match(HTML,/\/api\/network-fees/);
+ assert.match(HTML,/do not manually force nonce/);
+});

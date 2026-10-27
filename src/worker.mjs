@@ -36,6 +36,27 @@ export default {
   if(u.pathname==='/api/artifact')return json(artifact);
   if(u.pathname==='/api/health')return json({ok:true,skill:'saga-executor',network:'Pharos Atlantic Testnet',chainId:CHAIN_ID,
    compiled:Boolean(artifact.bytecode&&artifact.bytecode.length>20),contract:'SagaPlayground',readOnlyServer:true});
+  if(u.pathname==='/api/network-fees'){
+    const wallet=u.searchParams.get('wallet')||'';
+    if(!/^0x[0-9a-fA-F]{40}$/.test(wallet))return json({ok:false,error:'Invalid EVM address'},400);
+    try{
+      const chain=await rpc('eth_chainId');
+      if(Number(BigInt(chain))!==CHAIN_ID)throw new Error('RPC chain ID mismatch');
+      const [gasHex,latestHex,pendingHex,balanceHex]=await Promise.all([
+        rpc('eth_gasPrice'),
+        rpc('eth_getTransactionCount',[wallet,'latest']),
+        rpc('eth_getTransactionCount',[wallet,'pending']),
+        rpc('eth_getBalance',[wallet,'latest'])
+      ]);
+      const gas=BigInt(gasHex);
+      return json({ok:true,chainId:CHAIN_ID,
+        gasPriceWei:gas.toString(),gasPriceGwei:gas.toString().length>9?
+          (gas/1000000000n).toString()+'.'+(gas%1000000000n).toString().padStart(9,'0').replace(/0+$/,''):
+          '0.'+gas.toString().padStart(9,'0').replace(/0+$/,''),
+        confirmedNonce:Number(BigInt(latestHex)),pendingNonce:Number(BigInt(pendingHex)),
+        balanceWei:BigInt(balanceHex).toString(),note:'RPC fee quote only. Wallet controls final gas display, nonce and signing.'});
+    }catch(e){return json({ok:false,error:e.message},502)}
+  }
   if(u.pathname==='/api/state'){
    const contract=u.searchParams.get('contract')||'';
    const wallet=u.searchParams.get('wallet')||'';
