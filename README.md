@@ -3,7 +3,7 @@
 ## Live URL (once Cloudflare Git-connected Worker deploys)
 https://saga-executor.trantanlong2411.workers.dev/
 
-## Purpose
+## Current proof status\n\n- [On-chain COMPENSATED evidence (October 27, 2026)](./proof/README.md): real APPROVE, SWAP and REFUND receipts, plus an explicitly labeled no-broadcast DEPOSIT precondition failure.\n- The three-step SUCCEEDED run is still awaiting wallet-signed transactions; do not report full challenge completion yet.\n\n## Purpose
 An actual wallet-signed, receipt-gated 3-step saga on Pharos **Atlantic Testnet** (chain ID **688689**, `https://atlantic.dplabs-internal.com`), with bounded retries, state logging, and on-chain compensation. No private key or server-side signer is stored.
 
 ### Important: no fictitious DeFi trades

@@ -1,0 +1,58 @@
+{
+  "schema": "pharos-saga-proof-v1",
+  "source": "User-exported browser audit log (2026-10-27); independently verifiable via Pharos Atlantic JSON-RPC",
+  "network": "Pharos Atlantic Testnet",
+  "chainId": 688689,
+  "wallet": "0x74B2c2E4E4B771F0C75dcE44f40787468E323f79",
+  "contract": "0x934403227468426b33c26536dABC33b066B73f73",
+  "amountTestTokenA": "1.0",
+  "outcome": "COMPENSATED",
+  "steps": [
+    {
+      "name": "APPROVE",
+      "outcome": "CONFIRMED",
+      "transactionHash": "0x8e094b77aeb6a566639ee32f7bf8e71ac17d21e854ee6d7395ffbecab3224fe3",
+      "receiptBlock": "0x1e7991f",
+      "receiptStatus": 1
+    },
+    {
+      "name": "SWAP",
+      "outcome": "CONFIRMED",
+      "transactionHash": "0x530b552a9e146bd515c7757017d861d1b338bc06dd9d24c2769f586079828722",
+      "receiptBlock": "0x1e79ab4",
+      "receiptStatus": 1
+    },
+    {
+      "name": "DEPOSIT",
+      "outcome": "FAILED_PRECONDITION",
+      "transactionHash": null,
+      "receiptBlock": null,
+      "receiptStatus": null,
+      "note": "Read-only business-rule failure: available pending credit was 1.0 B, requested 1.000000000000000001 B. No DEPOSIT transaction was broadcast, so this is NOT a reverted on-chain receipt."
+    }
+  ],
+  "compensation": [
+    {
+      "name": "REFUND_A",
+      "outcome": "CONFIRMED",
+      "transactionHash": "0x06fda77e053d8382f29c73460e7c492d1e1aedb5a8a4564b8c1140d8b1f64150",
+      "receiptBlock": "0x1e79ca9",
+      "receiptStatus": 1
+    }
+  ],
+  "audit": {
+    "startedAt": "2026-10-27T18:28:27.202Z",
+    "finishedAt": "2026-10-27T19:02:31.616Z",
+    "recoveryStrategy": "business-rule-failure-followed-by-onchain-compensation",
+    "logEvents": [
+      "STEP_CONFIRMED",
+      "STEP_RECONCILED",
+      "DEPOSIT_GUARD_FAILED",
+      "COMPENSATION_CONFIRMED",
+      "COMPENSATION_STATE_CONFIRMED",
+      "ALLOWANCE_ALREADY_ZERO",
+      "SAGA_COMPENSATED"
+    ]
+  },
+  "qualification": "Partial challenge evidence: compensation is real, but failed DEPOSIT has no on-chain receipt. A separate successful approve→swap→deposit run is still required."
+}

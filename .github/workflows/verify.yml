@@ -53,3 +53,15 @@ jobs:
       - run: npm install --no-audit --no-fund
       - name: Inspect Pharos transaction and storage at receipt block and latest
         run: node scripts/diagnose-swap.mjs
+
+  verify-compensated-onchain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+      - name: Independently verify APPROVE SWAP REFUND receipts events and historical state
+        run: node scripts/verify-compensated-proof.mjs
