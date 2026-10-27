@@ -41,3 +41,15 @@ jobs:
           node-version: '22'
       - name: Verify compiled public Worker and testnet read-only RPC
         run: node scripts/smoke-deployed.mjs
+
+  diagnose-known-swap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+      - name: Inspect Pharos transaction and storage at receipt block and latest
+        run: node scripts/diagnose-swap.mjs
