@@ -18,6 +18,17 @@ The included Solidity sandbox creates two worthless test ERC-20 assets. The "swa
 | State log | Browser-local machine-readable log with timestamps, steps, hashes, blocks, transitions and recovery; export JSON. |
 | Two outcomes | Real testnet success mode; real testnet forced revert + compensation mode. **Require wallet + testnet PHRS; CI unit tests do not substitute live receipts.** |
 
+## OKX Wallet: gas estimate missing for intentionally reverted DEPOSIT
+
+An intentionally reverting `deposit(amount+1)` can be rejected by OKX Wallet as an unknown transaction with no network-fee estimate. Do not force a nonce or invent a gas figure.
+
+Two separate failure demonstrations are now available:
+
+- **Run safe failure + recovery** (default, OKX-compatible): execute real APPROVE and SWAP receipts; read actual contract pending B credit; require more than that credit at DEPOSIT; record a clearly labeled **business-rule precondition failure, without sending the third tx**; submit real `compensateSwap` to refund A, receipt-check and verify storage; revoke allowance only if any remains. This is a real blockchain compensation demo, NOT a status-0 reverted transaction.
+- **Advanced: on-chain revert** (optional): original transaction deliberately reverts, and can be rejected by browser wallets or cost testnet gas. If submitted and status 0, run the same real compensation.
+
+When the earlier paused forced-failure run already has a confirmed SWAP receipt, the **Finish paused failure + refund (OKX)** button verifies the original APPROVE and SWAP receipts and current pending state, then performs the safe precondition failure and testnet compensation without duplicate SWAP/APPROVE. Preserve browser localStorage until proof is exported.
+
 ## Reviewer: reproduce a true on-chain run
 
 1. Open the deployed Worker URL using Chrome with MetaMask installed; connect a *testnet-only* wallet with some Atlantic PHRS for gas. Do not use a wallet holding significant real assets.

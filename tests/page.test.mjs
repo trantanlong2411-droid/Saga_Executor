@@ -4,7 +4,7 @@ import {Script} from 'node:vm';
 import {HTML} from '../src/page.mjs';
 import artifact from '../public/contract.json' with {type:'json'};
 test('Browser UI contains both saga branches and export evidence controls',()=>{
- for(const id of ['runhappy','runfail','resume','recover','export','deploy','connect','reconcile'])
+ for(const id of ['runhappy','runfail','runrevert','saferecover','resume','recover','export','deploy','connect','reconcile'])
    assert.match(HTML,new RegExp('id="'+id+'"'));
  assert.match(HTML,/COMPENSATION_CONFIRMED/);
  assert.match(HTML,/STEP_CONFIRMED/);
@@ -45,4 +45,18 @@ test('Compensation must verify state at receipt block and latest before completi
  assert.match(HTML,/COMPENSATION_STATE_CONFIRMED/);
  assert.match(HTML,/BigInt\(s.pendingWei\)===0n/);
  assert.match(HTML,/BigInt\(s.allowanceWei\)===0n/);
+});
+
+test('OKX-safe failure mode never sends a reverting transaction',()=>{
+ assert.match(HTML,/mode==='guard-failure'/);
+ assert.match(HTML,/recordDepositBusinessFailure\(amount\)/);
+ assert.match(HTML,/DEPOSIT_GUARD_FAILED/);
+ assert.match(HTML,/transactionHash:null,receiptBlock:null,receiptStatus:null/);
+ assert.match(HTML,/await rollbackTestSwap\(amount/);
+});
+test('Paused real swap receipt can be recovered without duplicate approve or swap',()=>{
+ assert.match(HTML,/canFinishPausedFailure/);
+ assert.match(HTML,/await waitReceipt\(run.steps\[1\].transactionHash\)/);
+ assert.match(HTML,/SAFE_RECOVERY_SELECTED/);
+ assert.match(HTML,/run.mode==='forced-failure'/);
 });
