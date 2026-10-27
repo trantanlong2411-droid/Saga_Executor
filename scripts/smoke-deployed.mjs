@@ -46,5 +46,15 @@ async function main(){
  console.log('PINNED PHAROS SWAP STATE SUCCESS',JSON.stringify({
   contract,wallet,at:state.block,pendingWei:state.pendingWei
  }));
+ const fees=JSON.parse((await grab('/api/network-fees?'+new URLSearchParams({wallet}))).body);
+ assert.equal(fees.ok,true);assert.equal(fees.chainId,688689);
+ assert.match(fees.gasPriceWei,/^\\d+$/);
+ assert.ok(Number(fees.pendingNonce)>=Number(fees.confirmedNonce));
+ assert.match(fees.balanceWei,/^\\d+$/);
+ console.log('PHAROS GAS QUOTE SUCCESS',JSON.stringify({
+   gasPriceGwei:fees.gasPriceGwei,confirmedNonce:fees.confirmedNonce,
+   pendingNonce:fees.pendingNonce,
+   note:'Read-only RPC quote; browser wallet determines final fee confirmation.'
+ }));
 }
 main().catch(err=>{console.error('SMOKE FAILED',err.message);process.exitCode=1;});
