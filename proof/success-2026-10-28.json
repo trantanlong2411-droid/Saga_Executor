@@ -1,0 +1,53 @@
+{
+  "schema": "pharos-saga-proof-v1",
+  "source": "User-exported Saga Executor browser audit (2026-10-28), separately verified by reproducible Pharos Atlantic JSON-RPC checks",
+  "network": "Pharos Atlantic Testnet",
+  "chainId": 688689,
+  "wallet": "0x74B2c2E4E4B771F0C75dcE44f40787468E323f79",
+  "contract": "0x934403227468426b33c26536dABC33b066B73f73",
+  "mode": "success",
+  "amountTestTokenA": "1.0",
+  "startedAt": "2026-10-27T19:07:55.375Z",
+  "finishedAt": "2026-10-28T17:04:39.299Z",
+  "outcome": "SUCCEEDED",
+  "steps": [
+    {
+      "name": "APPROVE",
+      "status": "CONFIRMED",
+      "transactionHash": "0x8ab21c36c45c5cb23febc62c63504cde307fae0cbf38bcd2c9d1972cd053a724",
+      "receiptBlock": "0x1e79d39",
+      "receiptStatus": 1
+    },
+    {
+      "name": "SWAP",
+      "status": "CONFIRMED",
+      "transactionHash": "0x040ade7b2a5f733356f797226e0e3e611707112ef48351a21b9e2e6fe615bad5",
+      "receiptBlock": "0x1e8300b",
+      "receiptStatus": 1
+    },
+    {
+      "name": "DEPOSIT",
+      "status": "CONFIRMED",
+      "transactionHash": "0xa3f90ce5d44d762ae743c6076f4b8d0169edabce54396bb8d25d30d365d6a5a5",
+      "receiptBlock": "0x1e8300f",
+      "receiptStatus": 1
+    }
+  ],
+  "compensation": [],
+  "audit": {
+    "logEvents": [
+      "RUN_STARTED",
+      "STEP_SUBMITTED",
+      "STATE_CONFIRMED",
+      "STEP_CONFIRMED",
+      "WALLET_SIGNATURE_REJECTED",
+      "SAGA_RESUMED",
+      "SAGA_SUCCEEDED"
+    ],
+    "note": "The wallet initially rejected SWAP signature before any transaction was broadcast. User resumed the run later; no revert receipt or transaction was fabricated for that rejection."
+  },
+  "expectedOnChainResult": {
+    "pendingTestBWei": "0",
+    "depositedTestBWei": "1000000000000000000"
+  }
+}

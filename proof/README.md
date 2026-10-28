@@ -1,28 +1,20 @@
-# On-chain recovery evidence — Pharos Atlantic (October 27, 2026)
+# Saga Executor — independent Pharos Atlantic execution evidence
 
-Source evidence: user-exported Saga Executor JSON audit. This folder contains a minimal, public, independently checkable summary, not private wallet credentials.
+All linked transactions are public testnet transactions with no real funds. The demo uses a fixed 1:1 educational conversion of test assets, not a live DEX. Both scenarios use the same testnet contract and wallet.
 
-**Result:** `COMPENSATED` after business-rule DEPOSIT guard failure.
+| Scenario | Outcome | Evidence | Independent verification |
+|---|---|---|---|
+| Three dependent operations | **SUCCEEDED**: APPROVE → SWAP → DEPOSIT, each real status-1 receipt | [Successful run](./SUCCESS.md) | `node scripts/verify-success-proof.mjs` |
+| Forced business-rule failure and rollback | **COMPENSATED**: APPROVE → SWAP → read-only failed deposit guard → real REFUND_A | [Recovery run](./COMPENSATED.md) | `node scripts/verify-compensated-proof.mjs` |
 
-| Action | Result | Pharos Atlantic explorer |
-|---|---|---|
-| APPROVE | receipt status 1 | [Transaction](https://atlantic.pharosscan.xyz/tx/0x8e094b77aeb6a566639ee32f7bf8e71ac17d21e854ee6d7395ffbecab3224fe3) |
-| SWAP | receipt status 1 and `Swapped` log | [Transaction](https://atlantic.pharosscan.xyz/tx/0x530b552a9e146bd515c7757017d861d1b338bc06dd9d24c2769f586079828722) |
-| DEPOSIT | `FAILED_PRECONDITION`; **NO transaction broadcast** | No tx hash or reverted receipt exists |
-| REFUND_A | receipt status 1 and `SwapCompensated` log | [Transaction](https://atlantic.pharosscan.xyz/tx/0x06fda77e053d8382f29c73460e7c492d1e1aedb5a8a4564b8c1140d8b1f64150) |
+Reviewer summary:
+- Main proof / interactive demo: https://saga-executor.trantanlong2411.workers.dev/
+- Source: https://github.com/trantanlong2411-droid/Saga_Executor
+- Evidence scripts and CI: https://github.com/trantanlong2411-droid/Saga_Executor/actions/workflows/verify.yml
+- Network: Pharos Atlantic Testnet, chain ID 688689.
+- Testnet contract: `0x934403227468426b33c26536dABC33b066B73f73`.
+- Wallet: `0x74B2c2E4E4B771F0C75dcE44f40787468E323f79`.
 
-The testnet contract state at refund block `0x1e79ca9` is checked automatically: pending credit = 0, deposited shares = 0, allowance = 0. The refund is a compensating on-chain write, not an undo of EVM history.
+The successful run paused on a user-rejected wallet SWAP request and resumed later using the previously verified APPROVE receipt; the successful on-chain SWAP and DEPOSIT were then receipt-checked.
 
-Verify independently from CI or locally:
-
-```bash
-npm install
-node scripts/verify-compensated-proof.mjs
-```
-
-The script uses Pharos Atlantic JSON-RPC to verify receipts, senders, destinations, block order, emitted events, and historical storage. It must fail rather than invent success when the RPC cannot return proof.
-
-**Scoring caveat:** The third operation did **not** broadcast because OKX Wallet rejected an intentionally reverted transaction. The fallback safely demonstrated a rejected on-chain precondition followed by real compensation. For complete task coverage, also demonstrate a separate SUCCESS saga where APPROVE, SWAP and DEPOSIT each have an on-chain receipt. A forced actual reverted receipt, if the reviewer requires it, remains unproven.
-
-Evidence JSON: [forced-failure-compensated-2026-10-27.json](./forced-failure-compensated-2026-10-27.json)
-
+Important reviewer limitation: the failure scenario is a real read-only DEPOSIT business-rule rejection followed by a real refund/compensation. Because OKX rejected the intentionally reverted transaction before broadcast, there is no status-0 DEPOSIT receipt. Do not misstate it as a mined revert. Both rollback outcome and the separate three-transaction success outcome are genuinely on-chain verifiable.

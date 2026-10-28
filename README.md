@@ -1,9 +1,15 @@
 # Saga Executor — Pharos Agent Arena (Hard / 200 points)
 
-## Live URL (once Cloudflare Git-connected Worker deploys)
+## Deployed public app (Git-connected Cloudflare Worker)
 https://saga-executor.trantanlong2411.workers.dev/
 
-## Current proof status\n\n- [On-chain COMPENSATED evidence (October 27, 2026)](./proof/README.md): real APPROVE, SWAP and REFUND receipts, plus an explicitly labeled no-broadcast DEPOSIT precondition failure.\n- The three-step SUCCEEDED run is still awaiting wallet-signed transactions; do not report full challenge completion yet.\n\n## Purpose
+## Current proof status
+
+- [SUCCEEDED: APPROVE → SWAP → DEPOSIT, all on-chain](./proof/SUCCESS.md) (October 27–28, 2026).
+- [COMPENSATED: on-chain refund after a deposit guard failure](./proof/COMPENSATED.md) (October 27, 2026). The deposit failure was read-only, not a reverted on-chain transaction.
+- [Independent evidence index](./proof/README.md) and reproducible verification in GitHub Actions.
+
+## Purpose
 An actual wallet-signed, receipt-gated 3-step saga on Pharos **Atlantic Testnet** (chain ID **688689**, `https://atlantic.dplabs-internal.com`), with bounded retries, state logging, and on-chain compensation. No private key or server-side signer is stored.
 
 ### Important: no fictitious DeFi trades

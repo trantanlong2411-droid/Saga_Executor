@@ -65,3 +65,15 @@ jobs:
       - run: npm install --no-audit --no-fund
       - name: Independently verify APPROVE SWAP REFUND receipts events and historical state
         run: node scripts/verify-compensated-proof.mjs
+
+  verify-success-onchain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+      - name: Independently verify 3 on-chain receipts, events and historical state
+        run: node scripts/verify-success-proof.mjs
